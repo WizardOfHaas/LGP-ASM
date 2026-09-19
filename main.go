@@ -92,6 +92,11 @@ var asciiToFlex = []int{
 	047, 011, 001, -1, 014, -1, 036, 077,
 }
 
+//Variables used during assembly. These need to be global for convenience.
+var address = 0
+var expressions []Exp
+var labels = make(map[string]int)
+
 func isNumeric(s string) bool {
 	_, err := strconv.ParseFloat(s, 64)
 	return err == nil
@@ -264,9 +269,23 @@ func parseLine(l string) (*Exp, error) {
 		return nil, errors.New("Empty line")
 	}
 
-	label := getLabel(t)
+	//Is this a pre-proccesor directive?
+	if strings.HasPrefix(t[0], "%"){
+		//Do this dirty for now. Later I should do a map or list of formats
+		if t[0] == "%origin"{
+			origin, err := packLiteral(t[1])
+
+			if err != nil{
+				return nil, errors.New("Invalid preprocessing directive")
+			}
+
+			address = origin
+		}
+	}
 
 	//If we have a label then we can drop it from the line
+	label := getLabel(t)
+
 	if label != nil {
 		exp.Label = *label
 		_, t = t[0], t[1:]
@@ -372,26 +391,30 @@ func main() {
 	}
 
 	//First pass: transform raw test into list of expressions
-	address := 0
-	var expressions []Exp
-	var labels = make(map[string]int)
+	for i, l := range lines {
+		if l == ""{
+			//Ignore blank lines
+			continue
+		}
 
-	for _, l := range lines {
 		exp, err := parseLine(l)
 
-		if err == nil {
-			//Calculate address
-			exp.Address = address
-			address += exp.Size
-
-			//If it's a label then add it to the lookup table
-			if exp.Label != "" {
-				labels[exp.Label] = exp.Address
-			}
-
-			//Add to list of expressions
-			expressions = append(expressions, *exp)
+		if err != nil {
+			fmt.Printf("%s on line %d\n", err, i + 1)
+			continue
 		}
+			
+		//Calculate address
+		exp.Address = address
+		address += exp.Size
+
+		//If it's a label then add it to the lookup table
+		if exp.Label != "" {
+			labels[exp.Label] = exp.Address
+		}
+
+		//Add to list of expressions
+		expressions = append(expressions, *exp)
 	}
 
 	//Second pass: Substitute label addresses

@@ -1,3 +1,5 @@
+%origin 1234
+
 start:
 sta 1
 brg test_nums
