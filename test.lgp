@@ -1,0 +1,11 @@
+start:
+sta 1
+brg test_nums
+tra end
+end: stp
+
+test_nums: word 1234 5 6 start 7
+test_char: char "abc" "d" "e"
+word 0b111
+word 0x12Af
+word 0lJW01
