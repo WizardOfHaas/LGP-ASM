@@ -23,10 +23,13 @@ import (
 	%constant
 
 	Literals need to be supported as:
-	decimal
+	decimal (no prefix)
 	0lLGPHEX (0, lower case L, LGP hex number)
-	0xSTDHEX 
-	0bBINARY
+	0LLGPHEX (0, upper case L, LGP hex number)
+	0xSTDHEX (0, lower case H, standard hex number)
+	0XSTDHEX (0, upper case H, standard hex number)
+	0bBINARY (0, lower case B, binary number)
+	0BBINARY (0, upper case B, binary number)
 */
 
 type Exp struct {
@@ -95,17 +98,17 @@ func isNumeric(s string) bool {
 }
 
 func isBinary(s string) bool{
-	m, err := regexp.MatchString("0b[01]*", s)
+	m, err := regexp.MatchString("0[bB][01]*", s)
 	return err == nil && m
 }
 
 func isStdHex(s string) bool{
-	m, err := regexp.MatchString("0x[0-9a-fA-F]*", s)
+	m, err := regexp.MatchString("0[xX][0-9a-fA-F]*", s)
 	return err == nil && m
 }
 
 func isLgpHex(s string) bool{
-	m, err := regexp.MatchString("0l[0-9fgjkqwFGJKQW]*", s)
+	m, err := regexp.MatchString("0[lL][0-9fgjkqwFGJKQW]*", s)
 	return err == nil && m
 }
 
@@ -149,10 +152,13 @@ func getOrderAndArg(t []string) (*Order, *[]string, error) {
 func packLiteral(s string) (int, error) {
 	/*
 		Convert a literal to a numeric val
-		0x12EF	Standard hex
+		0x12EF	Standard hex (0, lower case X, standard hex number)
 		0lFGJ5	LGP Hex (0, lower case L, LGP hex number)
-		0b0110	Binary
-		1234	Decimal
+		0b0110	Binary (0, lower case B, binary number)
+		0x12EF	Standard hex (0, upper case X, standard hex number)
+		0lFGJ5	LGP Hex (0, upper case L, LGP hex number)
+		0b0110	Binary (0, upper case B, binary number)
+		1234	Decimal (no prefix)
 	*/
 
 	if isNumeric(s) {
