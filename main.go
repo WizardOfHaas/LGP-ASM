@@ -24,8 +24,8 @@ import (
 
 	Literals need to be supported as:
 	decimal
-	OxLGPHEX
-	0xSTDHEX
+	0lLGPHEX (0, lower case L, LGP hex number)
+	0xSTDHEX 
 	0bBINARY
 */
 
@@ -150,7 +150,7 @@ func packLiteral(s string) (int, error) {
 	/*
 		Convert a literal to a numeric val
 		0x12EF	Standard hex
-		0lFGJ5	LGP Hex
+		0lFGJ5	LGP Hex (0, lower case L, LGP hex number)
 		0b0110	Binary
 		1234	Decimal
 	*/
