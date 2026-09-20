@@ -74,7 +74,7 @@ func TestIsStdHex(t *testing.T){
 }
 
 func TestIsLGPHex(t *testing.T){
-	hex := []string{"0l1", "0L0", "0l1GFJ", "0lWJ01"}
+	hex := []string{"0l1", "0L0", "0l1GFJ", "0lWj01"}
 	notHex := []string{"l", "011FA0", "0xdfdsf3FSAD", "0l12AA", "0l"}
 
 	for _, s := range hex{
@@ -104,6 +104,32 @@ func TestIsSymbolic(t *testing.T){
 	for _, s := range notSymbolic{
 		if isSymbolic(s){
 			t.Errorf("%s should NOT be seen as a symbol", s)
+		}
+	}
+}
+
+func TestPackLiteral(t *testing.T){
+	literals := []struct{
+		Literal string
+		Value int
+	}{
+		{"1", 1},
+		{"0", 0},
+		{"0b1", 1},
+		{"0b0", 0},
+		{"0x1", 1},
+		{"0x0", 0},
+		{"0l1", 1},
+		{"0l0", 0},
+		{"0l1WJ2", 8130},
+		{"SYMBOLIC", -1},
+	}
+
+	for _, l := range literals{
+		i, _ := packLiteral(l.Literal)
+
+		if i != l.Value{
+			t.Errorf("%s should pack down as %d, not %d", l.Literal, l.Value, i)
 		}
 	}
 }
