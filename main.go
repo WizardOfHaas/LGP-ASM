@@ -103,17 +103,17 @@ func isNumeric(s string) bool {
 }
 
 func isBinary(s string) bool{
-	m, err := regexp.MatchString("0[bB][01]*", s)
+	m, err := regexp.MatchString("^0[bB][01]+$", s)
 	return err == nil && m
 }
 
 func isStdHex(s string) bool{
-	m, err := regexp.MatchString("0[xX][0-9a-fA-F]*", s)
+	m, err := regexp.MatchString("^0[xX][0-9a-fA-F]+$", s)
 	return err == nil && m
 }
 
 func isLgpHex(s string) bool{
-	m, err := regexp.MatchString("0[lL][0-9fgjkqwFGJKQW]*", s)
+	m, err := regexp.MatchString("^0[lL][0-9fgjkqwFGJKQW]+$", s)
 	return err == nil && m
 }
 
@@ -386,7 +386,7 @@ func main() {
 	//Read in the raw text
 	lines, err := readLines(os.Args[1])
 	if err != nil {
-		fmt.Println("readLines: %s", err)
+		fmt.Printf("readLines: %s\n", err)
 		return
 	}
 
